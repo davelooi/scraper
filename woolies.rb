@@ -3,7 +3,7 @@ require 'pry'
 
 class Woolies
   def initialize
-    @driver = Selenium::WebDriver.for :chrome
+    @driver = Selenium::WebDriver.for :remote, url: "http://localhost:4444/wd/hub"
   end
 
   def scrape(url)
@@ -18,7 +18,7 @@ class Woolies
   end
 
   def quit
-    @driver.quit
+    driver.quit
   end
 
   private
@@ -26,7 +26,10 @@ class Woolies
   attr_reader :driver
 end
 
-woolies = Woolies.new
-woolies.scrape('https://www.woolworths.com.au/shop/productdetails/826730/smith-s-crinkle-cut-potato-chips-original')
-woolies.scrape("https://www.woolworths.com.au/shop/productdetails/531015/woolworths-beef-stir-fry")
-woolies.quit
+begin
+  woolies = Woolies.new
+  woolies.scrape('https://www.woolworths.com.au/shop/productdetails/826730/smith-s-crinkle-cut-potato-chips-original')
+  woolies.scrape("https://www.woolworths.com.au/shop/productdetails/531015/woolworths-beef-stir-fry")
+ensure
+  woolies.quit
+end
