@@ -1,35 +1,25 @@
-require 'selenium-webdriver'
-require 'pry'
+require_relative 'supermarket'
 
-class Coles
-  def initialize
-    @driver = Selenium::WebDriver.for :chrome
-  end
-
-  def scrape(url)
-    driver.get(url)
-    # binding.pry
+class Coles < Supermarket
+  def find_title
     product_brand = driver.find_element(:class, "product-brand").text
     product_name = driver.find_element(:class, "product-name").text
-    title = "#{product_brand} #{product_name}"
+    "#{product_brand} #{product_name}"
+  end
+
+  def find_price
     dollar = driver.find_element(:class, "dollar-value").text
     cents = driver.find_element(:class, "cent-value").text
-    price = "#{dollar}#{cents}"
-
-    puts "title=#{title}"
-    puts "price=#{price}"
+    "#{dollar}#{cents}"
   end
 
-  def quit
-    @driver.quit
+  def in_stock?
+    find_product_flag == 'Temporarily unavailable'
   end
 
-  private
-
-  attr_reader :driver
+  def find_product_flag
+    driver.find_element(:class, "product-flag").text
+  rescue Selenium::WebDriver::Error::NoSuchElementError
+    nil
+  end
 end
-
-coles = Coles.new
-coles.scrape("https://shop.coles.com.au/a/national/product/smiths-crinkle-cut-original-potato-chips")
-coles.scrape("https://shop.coles.com.au/a/national/product/coles-beef-stir-fry-9990965p")
-coles.quit
